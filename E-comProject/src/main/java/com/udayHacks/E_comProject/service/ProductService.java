@@ -36,4 +36,17 @@ public class ProductService {
     public Products getProductById(BigInteger id) {
         return productRepo.findById(BigInteger.valueOf(id.longValue())).orElse(null);
     }
+
+    public Products updateProduct(BigInteger id, Products products, MultipartFile imageFile) throws IOException {
+
+
+        products.setImageType(imageFile.getContentType());
+        products.setProductName(imageFile.getOriginalFilename());
+        products.setImageData(imageFile.getBytes());
+         return productRepo.save(products);
+    }
+
+    public void deleteProduct(BigInteger id) {
+        productRepo.deleteById(id);
+    }
 }

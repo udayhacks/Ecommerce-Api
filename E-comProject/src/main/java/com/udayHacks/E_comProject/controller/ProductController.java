@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -21,20 +22,22 @@ public class ProductController {
 
 
     @GetMapping("/greeting")
-    public  String greet(){
-        return("hello World ..1");
+    public String greet() {
+        return ("hello World ..1");
     }
+
     @GetMapping("/products")
-    public ResponseEntity<List<Products>> getProducts(){
-        return  new ResponseEntity<>( productService.getProducts(), HttpStatus.OK);
+    public ResponseEntity<List<Products>> getProducts() {
+        return new ResponseEntity<>(productService.getProducts(), HttpStatus.OK);
     }
+
     @GetMapping("/product/{id}")
-    public ResponseEntity<Products> getProductById(@PathVariable BigInteger id){
+    public ResponseEntity<Products> getProductById(@PathVariable BigInteger id) {
         Products products = productService.getProductById(id);
-        if (products == null){
+        if (products == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }else{
-            return new ResponseEntity<>(products,HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(products, HttpStatus.OK);
         }
     }
 
@@ -47,15 +50,15 @@ public class ProductController {
             @RequestPart("imageFile") MultipartFile imageFile
     ) {
         try {
-            Products product1 = productService.addProduct(product , imageFile);
-            return new ResponseEntity<>(product1,HttpStatus.CREATED );
-        } catch (Exception e ){
+            Products product1 = productService.addProduct(product, imageFile);
+            return new ResponseEntity<>(product1, HttpStatus.CREATED);
+        } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/product/{id}/image")
-    public ResponseEntity<byte[]> getImageById(@PathVariable BigInteger id){
+    public ResponseEntity<byte[]> getImageById(@PathVariable BigInteger id) {
 
         Products product = productService.getProductById(id);
         byte[] imageFile = product.getImageData();
@@ -63,7 +66,26 @@ public class ProductController {
 
     }
 
+    @PutMapping(
+            value = "/products/{id}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<String> updateDat(@PathVariable BigInteger id,
+                                            @RequestPart("products") Products products,
+                                            @RequestPart("imageFile") MultipartFile imageFile
+    ) throws IOException {
+        try {
+            Products Product = productService.updateProduct(id, products, imageFile);
+            return new ResponseEntity<>("updated", HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @DeleteMapping("/products/id")
+    public ResponseEntity<String> deleteProduct(@PathVariable BigInteger id){
 
-
+        productService.deleteProduct(id);
+        return new ResponseEntity<>("Deleted " ,HttpStatus.OK);
+    }
 
 }
