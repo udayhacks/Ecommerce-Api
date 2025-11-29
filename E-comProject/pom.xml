@@ -72,7 +72,9 @@
 
     </dependencies>
 
+
 	<build>
+        <finalName>Ecom-project</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
